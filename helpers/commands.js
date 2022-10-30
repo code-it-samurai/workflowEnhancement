@@ -11,25 +11,34 @@ function generateCommand(answers){
 function executeTerminalCommands(command) {
 	exec(command, (error, stdout, stderr) => {
 		if (error) {
-			console.log(chalk.red(`${error}`));
+			console.error(chalk.red(`${error}`));
 		} else {
 			console.log(chalk.green(stdout));
 		}
 	});
 }
 
-function envObjectsParser(envObjects){
-	console.log("input", envObjects);
+function envDataParser(envObjects, datatype){
 	let parsedOptions = [];
-	if(envObjects.includes(",,")){
-		parsedOptions = envObjects.split(",,");
-		for (let i = 0; i < parsedOptions.length; i++) {
-			parsedOptions[i] = envObjectParser(parsedOptions[i]);
-		}
-		return parsedOptions;
-	}else {
-		parsedOptions = envObjectParser(envObjects);
-		return [parsedOptions];
+	switch (datatype) {
+		case "object[]":
+			if (envObjects.includes(",,")) {
+				parsedOptions = envObjects.split(",,");
+				for (let i = 0; i < parsedOptions.length; i++) {
+					parsedOptions[i] = envObjectParser(parsedOptions[i]);
+				}
+				return parsedOptions;
+			} else {
+				parsedOptions = envObjectParser(envObjects);
+				return [parsedOptions];
+			}
+		case "string[]":
+			if(envObjects.includes(",")){
+				parsedOptions = envObjects.split(",");
+				return parsedOptions;
+			} else {
+				return [envObjects]
+			}
 	}
 }
 
@@ -49,4 +58,4 @@ function collectDataTypes(options){
 	return optionsDataType;
 }
 
-module.exports = { executeTerminalCommands, envObjectsParser, collectDataTypes };
+module.exports = { executeTerminalCommands, envDataParser: envDataParser, collectDataTypes };

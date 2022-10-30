@@ -1,5 +1,5 @@
 require("dotenv").config({ path: __dirname + "/.env" });
-const envObjectsParser = require("./helpers/commands").envObjectsParser;
+const envDataParser = require("./helpers/commands").envDataParser;
 const collectDataTypes = require("./helpers/commands").collectDataTypes;
 let optionsDataTypes = {};
 
@@ -10,9 +10,8 @@ module.exports = {
 			type: "list",
 			message: "what do you want to do?",
 			choices: () => {
-				options = envObjectsParser(process.env.InitialCommands);
-				optionsDataTypes = {...optionsDataTypes, ...collectDataTypes(options)};
-				console.log("options data returned", optionsDataTypes);
+				let options = envDataParser(process.env.InitialCommands, 'object[]');
+				optionsDataTypes = {...optionsDataTypes, ...collectDataTypes(options)}; // collect data types of all the initial options
 				return options;
 			},
 		},
@@ -21,11 +20,7 @@ module.exports = {
 			type: "list",
 			message: "project?",
 			choices: function (previousAnswer) {
-				console.log(previousAnswer);
-				const options = process.env[previousAnswer.TASK_TYPE].split(",,");
-				for (let i = 0; i < options.length; i++) {
-					options[i] = JSON.parse(options[i]);
-				}
+				let options = envDataParser(process.env[previousAnswer.TASK_TYPE], optionsDataTypes[previousAnswer.TASK_TYPE]);
 				return options;
 			},
 		},
@@ -34,6 +29,7 @@ module.exports = {
 			type: "list",
 			message: "Please choose a command from the list",
 			choices: function (previousAnswer) {
+				console.log("HAHAHAHAA", process.env[previousAnswer.TASK_TARGET].split(","))
 				return process.env[previousAnswer.TASK_TARGET].split(",");
 			}
 		},
