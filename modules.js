@@ -49,8 +49,7 @@ module.exports = {
 					return []
 				}
 			}
-			,
-		},
+		 },
 		{
 			name: "ACTION",
 			type: "list",
